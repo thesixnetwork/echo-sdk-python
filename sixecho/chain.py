@@ -49,6 +49,15 @@ class Chain(object):
     def push_transaction(self, owner, authorization, digital_content):
         """
         upload digital content to server
+        Mdata :
+         - echo_title  require title show sixecho work
+         - echo_image_url option image show sixecho work
+         - echo_tags  options  tag show sixecho work
+         - echo_parent_id option tag show sixecho work
+         - echo_owner option current owner
+         - echo_ref_owner option current owner id
+         - echo_creator require who is creator asset
+         - echo_ref_creator option  who is creator asset id
         """
         ce = eospy.cleos.Cleos(url=self.host_url)
         payload = {
@@ -63,10 +72,12 @@ class Chain(object):
             "type": digital_content.type
         })
         mdata = json.dumps(digital_content.meta_media)
+        if digital_content.metai_media.get("title") == None:
+            raise Exception("Mata must have title")
         arguments = {
             "assetid": self.get_id(authorization, owner),
+            "category": digital_content.type,
             "author": owner,
-            "category": digital_content.meta_media["category_id"],
             "owner": owner,
             "idata": idata,
             "mdata": mdata,
