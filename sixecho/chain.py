@@ -72,7 +72,7 @@ class Chain(object):
             "type": digital_content.type
         })
         mdata = json.dumps(digital_content.meta_media)
-        if digital_content.metai_media.get("title") == None:
+        if digital_content.meta_media.get("echo_title") == None:
             raise Exception("Mata must have title")
         arguments = {
             "assetid": self.get_id(authorization, owner),
