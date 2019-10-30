@@ -76,8 +76,7 @@ class Chain(object):
             raise Exception("Mata must have title")
         arguments = {
             "assetid": self.get_id(authorization, owner),
-            "category": digital_content.type,
-            "author": owner,
+            "creator": owner,
             "owner": owner,
             "idata": idata,
             "mdata": mdata,
