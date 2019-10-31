@@ -30,7 +30,7 @@ class Chain(object):
         }
 
         arguments = {
-            "author": owner,
+            "creator": owner,
         }
         data = ce.abi_json_to_bin(payload["account"], payload["name"],
                                   arguments)
