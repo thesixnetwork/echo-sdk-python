@@ -198,11 +198,11 @@ class Text(object):
             #  list_of_groups = zip(*(iter(f), ) * self.max_workers)
 
         file_size = os.path.getsize(fpath)
-        print_progress_bar(0,
-                           file_size,
-                           prefix='Progress:',
-                           suffix='Complete',
-                           length=50)
+        #  print_progress_bar(0,
+        #  file_size,
+        #  prefix='Progress:',
+        #  suffix='Complete',
+        #  length=50)
         progress = 0
         lines = []
         if self.max_workers == 1:
@@ -213,11 +213,11 @@ class Text(object):
                 if len(words) != 0:
                     for d in words:
                         self.min_hash.update(d.encode('utf8'))
-                print_progress_bar(progress,
-                                   file_size,
-                                   prefix='Progress:',
-                                   suffix='Complete',
-                                   length=50)
+                #  print_progress_bar(progress,
+                #  file_size,
+                #  prefix='Progress:',
+                #  suffix='Complete',
+                #  length=50)
         else:
             for line in f:
                 sha256.update(line.encode())
@@ -228,11 +228,11 @@ class Text(object):
                 if len(words) != 0:
                     for d in words:
                         self.min_hash.update(d.encode('utf8'))
-                print_progress_bar(progress,
-                                   file_size,
-                                   prefix='Progress:',
-                                   suffix='Complete',
-                                   length=50)
+                #  print_progress_bar(progress,
+                #  file_size,
+                #  prefix='Progress:',
+                #  suffix='Complete',
+                #  length=50)
         self.sha256 = sha256.hexdigest()
         self.file_size = file_size
 
