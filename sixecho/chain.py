@@ -8,6 +8,7 @@ import uuid
 from datetime import datetime, timezone
 
 import eospy.cleos
+import numpy as np
 import pytz
 
 
@@ -38,7 +39,13 @@ class Chain(object):
         }
 
         arguments = {
-            "creator": owner,
+            "submitted_by": owner,
+            #  "nonce":
+            #  str(
+            #  np.random.randint(low=10000000,
+            #  high=99999999,
+            #  dtype="uint64",
+            #  size=1)[0])
         }
         data = ce.abi_json_to_bin(payload["account"], payload["name"],
                                   arguments)
@@ -50,28 +57,31 @@ class Chain(object):
         key = eospy.keys.EOSKey(self.private_key)
         resp = ce.push_transaction(trx, key, broadcast=True)
         assetid = resp["processed"]["action_traces"][0]["inline_traces"][1][
-            "act"]["data"]["assetid"]
+            "act"]["data"]["asset_id"]
         #  newid = int(datetime.now(tz=timezone.utc).timestamp() * 1000)
         return assetid
 
-    def push_transaction(self, owner, authorization, digital_content):
+    def push_transaction(self, authorization, digital_content):
         """
         upload digital content to server
         owner - Required : string : name of wallet
         authorization - Required : Array(dict)
             - ex: [{"actor": "bob1","permission": "active"}]
         digital_content - Required : Object of Asset Type
-          mdata :
-           - echo_title  require title show sixecho work
-           - echo_image_url option image show sixecho work
-           - echo_tags  options  tag show sixecho work
-           - echo_parent_id option tag show sixecho work
-           - echo_owner option current owner
-           - echo_ref_owner option current owner id
-           - echo_creator require who is creator asset
-           - echo_ref_creator option  who is creator asset id
+        common_info: Required
+         - title Required title show sixecho work
+         - image_url Option image show sixecho work
+         - parent_id Option parent id show reference in sixecho work
+         - tags Option tag show sixecho work
+        ref_info : Required
+         - owner Option current owner
+         - ref_owner Option current owner id
+         - creator Option who is creator asset
+         - ref_creator Option  who is creator asset id
+        mdata : Options - Dict
         """
         ce = self.ce
+        owner = authorization[0]["actor"]
         payload = {
             "account": "assets",
             "name": "create",
@@ -84,26 +94,21 @@ class Chain(object):
             "type": digital_content.type
         })
         mdata = json.dumps(digital_content.meta_media)
-        if digital_content.meta_media.get("echo_title") is None:
-            raise Exception("Mata must have title")
+        common_info = json.dumps(digital_content.common_info)
+        ref_info = json.dumps(digital_content.ref_info)
+        detail_info = json.dumps(digital_content.detail_info)
+        if digital_content.common_info.get("title") is None:
+            raise Exception("common info must have title")
         arguments = {
-            "assetid": self.get_id(authorization, owner),
-            "creator": owner,
-            "owner": owner,
+            "submitted_by": owner,
+            "asset_id": self.get_id(authorization, owner),
             "idata": idata,
             "mdata": mdata,
-            "requireclaim": 0
+            "common_info": common_info,
+            "detail_info": detail_info,
+            "ref_info": ref_info
         }
         resp = self.__push__(payload, arguments)
-        #  data = ce.abi_json_to_bin(payload["account"], payload["name"],
-        #  arguments)
-        #  payload['data'] = data['binargs']
-        #  trx = {"actions": [payload]}
-        #  trx['expiration'] = str(
-        #  (dt.datetime.utcnow() +
-        #  dt.timedelta(seconds=60)).replace(tzinfo=pytz.UTC))
-        #  key = eospy.keys.EOSKey(self.private_key)
-        #  resp = ce.push_transaction(trx, key, broadcast=True)
         return resp
 
     def get_transaction(self):
@@ -115,9 +120,7 @@ class Chain(object):
         """
           authorization - Required : Array(dict)
               - ex: [{"actor": "bob1","permission": "active"}]
-          platform - Required : dict
-            from_platform - Required : string
-            to_platform - Required : string
+          platform - Required : string 
           user - Required : dict
             from_user - Required : dict
                 echo_owner - Required : string
@@ -128,6 +131,7 @@ class Chain(object):
           asset_id - Required : string
           memo - Option - string
         """
+        owner = authorization[0]["actor"]
         payload = {
             "account": "assets",
             "name": "transfer",
@@ -136,11 +140,11 @@ class Chain(object):
         from_user = json.dumps(user["from_user"])
         to_user = json.dumps(user["to_user"])
         arguments = {
-            "from": platform["from_platform"],
-            "to": platform["to_platform"],
+            "from": owner,
+            "to": platform,
             "fromjsonstr": from_user,
             "tojsonstr": to_user,
-            "assetid": asset_id,
+            "asset_id": asset_id,
             "memo": memo
         }
         resp = self.__push__(payload, arguments)
@@ -183,30 +187,76 @@ class Chain(object):
         resp = self.__push__(payload, arguments)
         return resp
 
-    def update(self, authorization, owner, asset_id, mdata):
+    def set_mdata(self, authorization, asset_id, mdata):
         """
         Update Mdata in asset
           authorization - Required : Array(dict)
               - ex: [{"actor": "bob1","permission": "active"}]
-          owner - Required : string
           asset_id - Required : string
           mdata - Required : dict
         """
         mdata = json.dumps(mdata)
         payload = {
             "account": "assets",
-            "name": "update",
+            "name": "setmdata",
             "authorization": authorization,
         }
+        owner = authorization[0]["actor"]
         arguments = {
-            "owner": owner,
+            "platform": owner,
             "asset_id": asset_id,
             "mdata": mdata,
         }
         resp = self.__push__(payload, arguments)
         return resp
 
-    def revoke(self, authorization, owner, asset_id, memo):
+    def update_common_info(self, authorization, asset_id, common_info):
+        """
+        Update Mdata in asset
+          authorization - Required : Array(dict)
+              - ex: [{"actor": "bob1","permission": "active"}]
+          asset_id - Required : string
+          common_info - Required : dict
+        """
+        common_info = json.dumps(common_info)
+        payload = {
+            "account": "assets",
+            "name": "updatecinfo",
+            "authorization": authorization,
+        }
+        owner = authorization[0]["actor"]
+        arguments = {
+            "platform": owner,
+            "asset_id": asset_id,
+            "common_info": common_info,
+        }
+        resp = self.__push__(payload, arguments)
+        return resp
+
+    def set_detail_info(self, authorization, asset_id, detail_info):
+        """
+        Update Mdata in asset
+          authorization - Required : Array(dict)
+              - ex: [{"actor": "bob1","permission": "active"}]
+          asset_id - Required : string
+          detail_info - Required : dict
+        """
+        detail_info = json.dumps(detail_info)
+        payload = {
+            "account": "assets",
+            "name": "setdinfo",
+            "authorization": authorization,
+        }
+        owner = authorization[0]["actor"]
+        arguments = {
+            "platform": owner,
+            "asset_id": asset_id,
+            "detail_info": detail_info,
+        }
+        resp = self.__push__(payload, arguments)
+        return resp
+
+    def revoke(self, authorization, asset_id, memo):
         """
          Delete asset
             authorization - Required : Array(dict)
@@ -219,6 +269,7 @@ class Chain(object):
             "name": "revoke",
             "authorization": authorization,
         }
+        owner = authorization[0]["actor"]
         arguments = {
             "owner": owner,
             "asset_id": asset_id,

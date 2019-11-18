@@ -23,6 +23,7 @@ from epub_conversion.utils import open_book
 from PIL import Image
 from pythainlp import word_tokenize
 
+from .base import Base
 from .echo_util import print_progress_bar
 
 #  def mygrouper(n, iterable):
@@ -74,7 +75,7 @@ def tokenize_mutiline(lines=[]):
         return result
 
 
-class Text(object):
+class Text(Base):
     """
     client class to control api with restful
     """
@@ -98,6 +99,9 @@ class Text(object):
         self.meta_media = None
         self.type = "TEXT"
         self.digest = ""
+        self.common_info = {}
+        self.ref_info = {}
+        self.detail_info = {}
 
     #  def digest(self):
     #  """Export the hash values, which is the internal state of the

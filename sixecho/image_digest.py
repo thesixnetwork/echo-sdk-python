@@ -7,6 +7,8 @@ import imagehash
 from PIL import Image as M
 from PIL.ExifTags import TAGS
 
+from .base import Base
+
 
 def convert_to_string(value):
     str_type = type(value).__name__
@@ -24,7 +26,7 @@ def convert_to_string(value):
         return "con not file" + str_type
 
 
-class Image(object):
+class Image(Base):
     """
     client class 
     """
@@ -39,6 +41,9 @@ class Image(object):
         self.meta_media = {}
         self.exif = {}
         self.digest = ""
+        self.common_info = {}
+        self.ref_info = {}
+        self.detail_info = {}
 
     def set_meta(self, meta_media):
         """
@@ -48,6 +53,16 @@ class Image(object):
 
         """
         self.meta_media = meta_media
+
+    def set_detail_info(self, detail_info):
+        """
+        detail_info: Required
+            photographer String
+            width        integer
+            hight        integer
+            dpi          integer
+        """
+        self.detail_info = detail_info
 
     def merge_meta(self, meta_media):
         meta_media.update(self.exif)
