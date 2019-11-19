@@ -112,6 +112,18 @@ class Text(Base):
     #  """
     #  return self.min_hash.digest()
 
+    def set_detail_info(self, detail_info):
+        """
+        detail_info: Required
+          "isbn" Options - string
+          "author" Optons - string
+          "publisher" Options - string
+          "published_date Options - integer (unixtimestmap)
+          "language" Options - string
+          "number_of_pages" Options - integer
+        """
+        self.detail_info = detail_info
+
     def generate(self, str=None, txtpath=None, epubpath=None, pdfpath=None):
         """Generate minhash with new value from string or file
         we use minhash from https://ekzhu.github.io/datasketch/_modules/datasketch/minhash.html#MinHash.update
