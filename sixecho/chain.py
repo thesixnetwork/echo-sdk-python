@@ -271,7 +271,7 @@ class Chain(object):
         }
         owner = authorization[0]["actor"]
         arguments = {
-            "owner": owner,
+            "platform": owner,
             "asset_id": asset_id,
             "memo": memo,
         }
