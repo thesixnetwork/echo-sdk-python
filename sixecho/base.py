@@ -17,6 +17,9 @@ class Base(object):
     def set_ref_info(self, ref_info):
         """
         ref_info: Required
+         - ref_owner Required string
+         - owner Required string
+         - ref_creator string
+         - creator  Required string
         """
         self.ref_info = ref_info
-
