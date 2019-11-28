@@ -64,21 +64,9 @@ class Chain(object):
     def push_transaction(self, authorization, digital_content):
         """
         upload digital content to server
-        owner - Required : string : name of wallet
         authorization - Required : Array(dict)
             - ex: [{"actor": "bob1","permission": "active"}]
         digital_content - Required : Object of Asset Type
-        common_info: Required
-         - title Required title show sixecho work
-         - image_url Option image show sixecho work
-         - parent_id Option parent id show reference in sixecho work
-         - tags Option tag show sixecho work
-        ref_info : Required
-         - owner Option current owner
-         - ref_owner Option current owner id
-         - creator Option who is creator asset
-         - ref_creator Option  who is creator asset id
-        mdata : Options - Dict
         """
         ce = self.ce
         owner = authorization[0]["actor"]
@@ -275,6 +263,30 @@ class Chain(object):
             "asset_id": asset_id,
             "memo": memo,
         }
+        resp = self.__push__(payload, arguments)
+        return resp
+
+    def isduplicate(self, authorization, digital_content):
+        """
+          IsDeuplicate
+          authorization - Required : Array(dict)
+              - ex: [{"actor": "bob1","permission": "active"}]
+          digital_content - Required : Object of Asset Type
+        """
+        ce = self.ce
+        owner = authorization[0]["actor"]
+        payload = {
+            "account": "assets",
+            "name": "isduplicate",
+            "authorization": authorization,
+        }
+        idata = json.dumps({
+            "digest": digital_content.digest,
+            "sha256": digital_content.sha256,
+            "size_file": digital_content.file_size,
+            "type": digital_content.type
+        })
+        arguments = {"idata": idata}
         resp = self.__push__(payload, arguments)
         return resp
 
