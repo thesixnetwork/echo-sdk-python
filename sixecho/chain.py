@@ -39,13 +39,14 @@ class Chain(object):
         }
 
         arguments = {
-            "submitted_by": owner,
-            #  "nonce":
-            #  str(
-            #  np.random.randint(low=10000000,
-            #  high=99999999,
-            #  dtype="uint64",
-            #  size=1)[0])
+            "submitted_by":
+            owner,
+            "num":
+            str(
+                np.random.randint(low=10000000,
+                                  high=99999999,
+                                  dtype="uint64",
+                                  size=1)[0])
         }
         data = ce.abi_json_to_bin(payload["account"], payload["name"],
                                   arguments)
