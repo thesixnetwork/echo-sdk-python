@@ -48,7 +48,7 @@ def tokenize(str):
     >> sixecho.tokenize('I am a developer python newly. ผมเป็นมือใหม่สำหรับ python')
     >> ['I','am','a','developer','python','newly','.','ผม','เป็น','มือ','ใหม่','สำหรับ','python']
     """
-    words = word_tokenize(str, engine="dict")
+    words = word_tokenize(str, engine="longest")
     new_words = [word for word in words if word != ' ']
     return new_words
 
