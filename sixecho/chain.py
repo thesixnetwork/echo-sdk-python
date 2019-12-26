@@ -43,9 +43,7 @@ class Chain(object):
             owner,
             "num":
             str(
-                np.random.randint(low=10000000,
-                                  high=99999999,
-                                  dtype="uint64",
+                np.random.randint(low=0, high=3000000, dtype="uint64",
                                   size=1)[0])
         }
         data = ce.abi_json_to_bin(payload["account"], payload["name"],
@@ -112,11 +110,11 @@ class Chain(object):
           platform - Required : string 
           user - Required : dict
             from_user - Required : dict
-                echo_owner - Required : string
-                echo_ref_owner - Required : string
+                owner - Required : string
+                ref_owner - Required : string
             to_user - Required : dict
-                echo_owner - Required : string
-                echo_ref_owner - Required : string
+                owner - Required : string
+                ref_owner - Required : string
           asset_id - Required : string
           memo - Option - string
         """
